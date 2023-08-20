@@ -1,5 +1,6 @@
 % 3D LIPM gait generation
 clear;clc;
+%% Walking Pattern Generation
 % walk parameters - foot positions
 numSteps = 3;
 n_steps = numSteps + 2; % no. of steps + 2
@@ -99,64 +100,9 @@ fc_y = [fc_y p_y];
 fcp_x = fc_x;
 fcp_y = fc_y;
 fcp_y(end) = 0;
-
 %modify initial foot position
 fc_y(1) = -0.155/2;
 %fc_y(end) = 0.155/2;
-
-%calc foot centers and bottom right corner pts for plotting
-x_off = 0.05;
-y_off = fw/2;
-xLeft = [fc_x(1) - x_off];
-yLeft = [fc_y(1) - y_off];
-for i = 1:n_steps
-%     fc_x(i+1) = fc_x(i) + sx(i);
-%     fc_y(i+1) = fc_y(i) - (-1)^i*sy(i);
-    xLeft(i+1) = fc_x(i+1) - x_off;
-    yLeft(i+1) = fc_y(i+1) - y_off;
-end
-
-%% Plots
-% figure
-% hold on
-% grid on
-% axis equal
-% % plot footsteps
-% for i = 1:n_steps+1
-%     rectangle('Position', [xLeft(i), yLeft(i),fl,fw], 'EdgeColor', 'b','LineWidth', 2);
-% end
-% plot(x_com,y_com,'r','LineWidth',3)
-% plot(fc_x,fc_y,'--o')
-% xlabel('X (m)')
-% ylabel('Y (m)')
-% title('3D LIPM Gait')
-% legend('CoM Traj','ZMP Traj')
-% 
-% figure
-% 
-% subplot(2,2,1)
-% plot(time,x_com)
-% xlabel('time (sec)')
-% ylabel('x (m)')
-% title('x\_com vs t')
-% 
-% subplot(2,2,2)
-% plot(time,y_com)
-% xlabel('time (sec)')
-% ylabel('y (m)')
-% title('y\_com vs t')
-% 
-% subplot(2,2,3)
-% plot(time,vx_com)
-% xlabel('time (sec)')
-% ylabel('Vx (m/s)')
-% title('Vx\_com vs t')
-% 
-% subplot(2,2,4)
-% plot(time,vy_com)
-% xlabel('time (sec)')
-% ylabel('Vy (m/s)')
-% title('Vy\_com vs t')
 
 %% generating foot trajectories
 swing_height = 0.1; %m
@@ -198,18 +144,26 @@ for i = 1:n_steps
         swing_l = 0;
     end
     
-    [q_r,qd_r,qdd_r] = getSwingFootTraj(footpos_right_i,footpos_right_f,swing_r,ti,tf,dt);
-    [q_l,qd_l,qdd_l] = getSwingFootTraj(footpos_left_i,footpos_left_f,swing_l,ti,tf,dt);
+    if i < n_steps
+        [q_r,qd_r,qdd_r] = getSwingFootTraj(footpos_right_i,footpos_right_f,swing_r,ti,tf-dt,dt);
+        [q_l,qd_l,qdd_l] = getSwingFootTraj(footpos_left_i,footpos_left_f,swing_l,ti,tf-dt,dt);
+    else
+        [q_r,qd_r,qdd_r] = getSwingFootTraj(footpos_right_i,footpos_right_f,swing_r,ti,tf,dt);
+        [q_l,qd_l,qdd_l] = getSwingFootTraj(footpos_left_i,footpos_left_f,swing_l,ti,tf,dt);
+    end
 
     footPos_right = [footPos_right q_r];
     footPos_left = [footPos_left q_l];
     footVel_right = [footVel_right qd_r];
     footVel_left = [footVel_left qd_l];
 end
+
+%% animate CoM and foot motion
 px = px0;
 py = py0;
 n = 1;
-% animate CoM and foot motion
+
+figure
 for i = 1:size(time,2)
     if mod(i,100) == 0
         n = n + 1;
@@ -218,9 +172,8 @@ for i = 1:size(time,2)
     end
     % LIPM
     plot3([px x_com(:,i)],[py y_com(:,i)],[0 z_com(:,i)],'-b','LineWidth',2)
-        hold on
+    hold on
     plot3(x_com(:,i),y_com(:,i),z_com(:,i),'o','MarkerSize',15,'MarkerFaceColor','r')
-
     % CoM
     plot3(x_com(:,1:i),y_com(:,1:i),z_com(:,1:i));
     % right foot
@@ -232,3 +185,65 @@ for i = 1:size(time,2)
     pause(dt)
     hold off
 end
+
+%% Plots
+%calc foot centers and bottom right corner pts for plotting
+x_off = 0.05;
+y_off = fw/2;
+xLeft = [fc_x(1) - x_off];
+yLeft = [fc_y(1) - y_off];
+for i = 1:n_steps
+    xLeft(i+1) = fc_x(i+1) - x_off;
+    yLeft(i+1) = fc_y(i+1) - y_off;
+end
+
+figure
+hold on
+grid on
+axis equal
+% plot footsteps
+for i = 1:n_steps+1
+    rectangle('Position', [xLeft(i), yLeft(i),fl,fw], 'EdgeColor', 'b','LineWidth', 2);
+end
+% plot CoM traj
+plot(x_com,y_com,'r','LineWidth',3)
+plot(fcp_x,fcp_y,'--o','MarkerSize',7.5,'MarkerFaceColor','r')
+plot(fc_x,fc_y,'ob')
+xlabel('X (m)')
+ylabel('Y (m)')
+title('3D LIPM Gait')
+legend('CoM Traj','ZMP Traj','Foot Center')
+
+% position and velocity plots
+figure
+
+subplot(2,2,1)
+plot(time,x_com)
+xlabel('time (sec)')
+ylabel('x (m)')
+title('x\_com vs t')
+
+subplot(2,2,2)
+plot(time,y_com)
+xlabel('time (sec)')
+ylabel('y (m)')
+title('y\_com vs t')
+
+subplot(2,2,3)
+plot(time,vx_com)
+xlabel('time (sec)')
+ylabel('Vx (m/s)')
+title('Vx\_com vs t')
+
+subplot(2,2,4)
+plot(time,vy_com)
+xlabel('time (sec)')
+ylabel('Vy (m/s)')
+title('Vy\_com vs t')
+
+%% Inverse Kinematics
+% matlab and gazebo have different reference frames - data needs to be
+% transformed to the gazebo world frame
+desiredStates = convertMat2gazebo([x_com;y_com;z_com],[vx_com;vy_com;zeros(size(time))],footPos_right,footVel_right,footPos_left,footVel_left);
+
+desjointStates = getJointStates(desiredStates);
