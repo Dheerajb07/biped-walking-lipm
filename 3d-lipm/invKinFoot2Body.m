@@ -1,5 +1,12 @@
 function jointAngles = invKinFoot2Body(Tb,isLeft)
     % inputs: Tb - tranformation matrix of body wrt foot
+    % convention:
+    %  th1 - 'hip_yaw_joint'
+    %  th2 - 'hip_roll_joint'
+    %  th3 - 'hip_pitch_joint'
+    %  th4 - 'knee_pitch_joint'
+    %  th5 - 'ankle_pitch_joint'
+    %  th6 - 'ankle_roll_joint'
     % params
     L1 = 0.0775;
     if isLeft
@@ -10,7 +17,7 @@ function jointAngles = invKinFoot2Body(Tb,isLeft)
     L4 = 0.3700;
     L5 = 0.0948;
     % decouple
-    Twrist = Tb - [0 0 0  L2;
+    Twrist = Tb + [0 0 0  L2;
                   0 0 0 -L1;
                   0 0 0  0 ;
                   0 0 0  1];

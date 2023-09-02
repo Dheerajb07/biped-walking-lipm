@@ -23,8 +23,8 @@ function jointStates = getJointStates(desiredStates)
         Tb_f_right = Tf_right_w\Tb_w;
         Tb_f_left = Tf_left_w\Tb_w;
         % inv kin
-        theta_right = invKinBody2Foot(Tb_f_right,false);
-        theta_left = invKinBody2Foot(Tb_f_left,true);
+        theta_right = invKinFoot2Body(Tb_f_right,false);
+        theta_left = invKinFoot2Body(Tb_f_left,true);
         jointStates.theta_right(:,i) = theta_right;
         jointStates.theta_left(:,i) = theta_left;
     end

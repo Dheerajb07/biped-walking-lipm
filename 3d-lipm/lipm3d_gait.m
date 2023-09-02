@@ -1,6 +1,7 @@
+%% Walking Pattern Generation
 % 3D LIPM gait generation
 clear;clc;
-%% Walking Pattern Generation
+% CoM Trajectory Generation
 % walk parameters - foot positions
 numSteps = 3;
 n_steps = numSteps + 2; % no. of steps + 2
@@ -158,6 +159,17 @@ for i = 1:n_steps
     footVel_left = [footVel_left qd_l];
 end
 
+%% Inverse Kinematics
+% matlab and gazebo have different reference frames - data needs to be
+% transformed to the gazebo world frame
+desiredStates = convertMat2gazebo([x_com;y_com;z_com],[vx_com;vy_com;zeros(size(time))],footPos_right,footVel_right,footPos_left,footVel_left);
+
+desJointStates = getJointStates(desiredStates);
+save desJointStates.mat desJointStates -mat
+
+%% Publish joint states to gazebo
+jointStatePublisher(desJointStates)
+
 %% animate CoM and foot motion
 px = px0;
 py = py0;
@@ -240,10 +252,3 @@ plot(time,vy_com)
 xlabel('time (sec)')
 ylabel('Vy (m/s)')
 title('Vy\_com vs t')
-
-%% Inverse Kinematics
-% matlab and gazebo have different reference frames - data needs to be
-% transformed to the gazebo world frame
-desiredStates = convertMat2gazebo([x_com;y_com;z_com],[vx_com;vy_com;zeros(size(time))],footPos_right,footVel_right,footPos_left,footVel_left);
-
-desjointStates = getJointStates(desiredStates);

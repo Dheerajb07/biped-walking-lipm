@@ -6,6 +6,6 @@ config = homeConfiguration(robot);
 %%
 load desJointStates.mat
 
-config = [desjointStates.theta_left(:,100);desjointStates.theta_right(:,100)];
+config = [desJointStates.theta_left(:,350);desJointStates.theta_right(:,350)];
 % centerOfMass(robot,config)
-show(robot,config);
+show(robot,config)
