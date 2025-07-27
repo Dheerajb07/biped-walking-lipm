@@ -62,8 +62,8 @@ foot_step_0 = np.array([0.0, -step_width/2])  # initial foot step position in x-
 # configuration for TSID
 # ----------------------------------------------
 dt = 0.002  # controller time step
-T_pre = 3  # simulation time before starting to walk
-T_post = 1.5  # simulation time after walking
+T_pre = 1  # simulation time before starting to walk
+T_post = 0  # simulation time after walking
 
 w_com = 1.0  # weight of center of mass task
 w_cop = 0.0  # weight of center of pressure task

@@ -192,38 +192,51 @@ time = np.arange(0.0, (N + N_post) * conf.dt, conf.dt)
 
 PLOT_COM = 1
 PLOT_COP = 0
-PLOT_FOOT_TRAJ = 1
+PLOT_FOOT_TRAJ = 0
 PLOT_TORQUES = 0
 PLOT_JOINT_VEL = 0
 
 if PLOT_COM:
     (f, ax) = plut.create_empty_figure(3, 1)
+    # CoM position plots  
     for i in range(3):
-        ax[i].plot(time, com_pos[i, :], label="CoM " + str(i))
-        ax[i].plot(time[:N], com_pos_ref[i, :], "r:", label="CoM Ref " + str(i))
-        ax[i].set_xlabel("Time [s]")
-        ax[i].set_ylabel("CoM [m]")
+        ax[i].plot(time, com_pos[i, :], label="Actual")
+        ax[i].plot(time[:N], com_pos_ref[i, :], "r:", label="Reference")
+        ax[i].set_xlabel("Time (s)")
         leg = ax[i].legend()
         leg.get_frame().set_alpha(0.5)
 
-    (f, ax) = plut.create_empty_figure(3, 1)
-    for i in range(3):
-        ax[i].plot(time, com_vel[i, :], label="CoM Vel " + str(i))
-        ax[i].plot(time[:N], com_vel_ref[i, :], "r:", label="CoM Vel Ref " + str(i))
-        ax[i].set_xlabel("Time [s]")
-        ax[i].set_ylabel("CoM Vel [m/s]")
-        leg = ax[i].legend()
-        leg.get_frame().set_alpha(0.5)
+    ax[0].set_ylabel("x (m)")
+    ax[1].set_ylabel("y (m)")
+    ax[2].set_ylabel("z (m)")
+    f.suptitle('CoM Postion')
 
     (f, ax) = plut.create_empty_figure(3, 1)
     for i in range(3):
-        ax[i].plot(time, com_acc[i, :], label="CoM Acc " + str(i))
-        ax[i].plot(time[:N], com_acc_ref[i, :], "r:", label="CoM Acc Ref " + str(i))
-        ax[i].plot(time, com_acc_des[i, :], "g--", label="CoM Acc Des " + str(i))
-        ax[i].set_xlabel("Time [s]")
-        ax[i].set_ylabel("CoM Acc [m/s^2]")
+        ax[i].plot(time, com_vel[i, :], label="Actual")
+        ax[i].plot(time[:N], com_vel_ref[i, :], "r:", label="Reference")
+        ax[i].set_xlabel("Time (s)")
         leg = ax[i].legend()
         leg.get_frame().set_alpha(0.5)
+
+    ax[0].set_ylabel("vx (m/s)")
+    ax[1].set_ylabel("vy (m/s)")
+    ax[2].set_ylabel("vz (m/s)")
+    f.suptitle('CoM Velocity')
+
+    (f, ax) = plut.create_empty_figure(3, 1)
+    for i in range(3):
+        ax[i].plot(time, com_acc[i, :], label="Actual")
+        ax[i].plot(time[:N], com_acc_ref[i, :], "r:", label="Reference")
+        ax[i].plot(time, com_acc_des[i, :], "g--", label="Desired")
+        ax[i].set_xlabel("Time (s)")
+        leg = ax[i].legend()
+        leg.get_frame().set_alpha(0.5)
+
+    ax[0].set_ylabel("ax (m/s^2)")
+    ax[1].set_ylabel("ay (m/s^2)")
+    ax[2].set_ylabel("az (m/s^2)")
+    f.suptitle('CoM Acceleration')
 
 if PLOT_COP:
     (f, ax) = plut.create_empty_figure(2, 1)
